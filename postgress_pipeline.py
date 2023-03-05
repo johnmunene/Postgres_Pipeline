@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[64]:
+# In[81]:
 
 
 #loading necessary modules
@@ -10,22 +10,23 @@
 #!pip install mysql
 import pandas as pd
 import sqlite3
-#import wget
+import wget
 import zipfile
 from sqlalchemy import create_engine
 import mysql.connector as sql
 
 
-# In[66]:
+# In[82]:
 
 
 
-#wget.download('https://bit.ly/3YNdO2Y')
-unzipcsvfile = zipfile.ZipFile('./network_sensor.zip')
+def extract_data(file_path):
+    wget.download(file_path)
+    unzipcsvfile = zipfile.ZipFile('./network_sensor.zip')
 
-network_sensor_df = pd.read_csv(unzipcsvfile.open('network_sensor.csv'))
-maintenance_df = pd.read_csv(unzipcsvfile.open('maintenance_records.csv'))
-equipment_sensor_df = pd.read_csv(unzipcsvfile.open('equipment_sensor.csv'))
+    network_sensor_df = pd.read_csv(unzipcsvfile.open('network_sensor.csv'))
+    maintenance_df = pd.read_csv(unzipcsvfile.open('maintenance_records.csv'))
+    equipment_sensor_df = pd.read_csv(unzipcsvfile.open('equipment_sensor.csv'))
 
 
 # In[67]:
@@ -36,7 +37,7 @@ equipment_sensor_df = pd.read_csv(unzipcsvfile.open('equipment_sensor.csv'))
 
 # # data cleaning
 
-# In[68]:
+# In[83]:
 
 
 
@@ -70,7 +71,7 @@ def transform_data():
 
 # # prediction
 
-# In[69]:
+# In[84]:
 
 
 def predict_maintenance(data):
@@ -81,7 +82,7 @@ def predict_maintenance(data):
 
 # # load data to postgress
 
-# In[70]:
+# In[85]:
 
 
 
@@ -97,19 +98,18 @@ def load_data(data):
     data.to_sql('maintenance_prediction', con=engine, if_exists='replace', index=False)
 
 
-# In[71]:
-
-
-data = transform_data()
-data
-
-
-# In[72]:
+# In[86]:
 
 
 if __name__ == '__main__':
-    
+    extract_data('https://bit.ly/3YNdO2Y')
     data = transform_data()
     data = predict_maintenance(data)
     load_data(data)
+
+
+# In[ ]:
+
+
+
 
